@@ -11,6 +11,7 @@ namespace Eis.Identity.Api.Profiles
             // Source -> Target
             CreateMap<AppUser, AppUserReadDto>();
             CreateMap<AppUserCreateDto, AppUser>();
+            CreateMap<AppUserReadDto, AppUserPublishedDto>();
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Eis.Identity.Api.AsyncDataServices;
 using Eis.Identity.Api.Data;
 using Eis.Identity.Api.SyncDataServices.Http;
 using Microsoft.AspNetCore.Builder;
@@ -39,6 +40,7 @@ namespace Eis.Identity.Api
 
             services.AddScoped<IAppUserRepo, AppUserRepo>();
             services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
+            services.AddSingleton<IMessageBusClient, MessageBusClient>();
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen(c =>

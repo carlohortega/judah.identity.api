@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Eis.Identity.Api.AsyncDataServices;
 using Eis.Identity.Api.Data;
 using Eis.Identity.Api.Dtos;
 using Eis.Identity.Api.Models;
@@ -17,15 +18,18 @@ namespace Eis.Identity.Api.Controllers
         private readonly IAppUserRepo _repo;
         private readonly IMapper _mapper;
         private readonly ICommandDataClient _commandDataClient;
+        private readonly IMessageBusClient _messageBusClient;
 
         public AppUsersController(
             IAppUserRepo repo, 
             IMapper mapper,
-            ICommandDataClient commandDataClient)
+            ICommandDataClient commandDataClient,
+            IMessageBusClient messageBusClient)
         {
             _repo = repo;
             _mapper = mapper;
             _commandDataClient = commandDataClient;
+            _messageBusClient = messageBusClient;
         }
 
         [HttpGet]
@@ -62,6 +66,7 @@ namespace Eis.Identity.Api.Controllers
             
             var appUserReadDto = _mapper.Map<AppUserReadDto>(appUserModel);
 
+            // Send sync message
             try 
             {
                 await _commandDataClient.SendIdentityToCommand(appUserReadDto);
@@ -69,6 +74,18 @@ namespace Eis.Identity.Api.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"--> Could not send synchronously: {ex.Message}");
+            }
+
+            // Send async message
+            try 
+            {
+                var appUserDto = _mapper.Map<AppUserPublishedDto>(appUserReadDto);
+                appUserDto.Event = "AppUser_Published";
+                _messageBusClient.PublishNewAppUser(appUserDto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"--> Could not send asynchronously: {ex.Message}");
             }
 
             return CreatedAtRoute(nameof(GetAppUserById), new { id = appUserReadDto.Id }, appUserReadDto);

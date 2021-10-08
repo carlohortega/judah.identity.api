@@ -12,16 +12,16 @@ USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-focal AS build
 WORKDIR /src
-COPY ["Eis.Identity.Api.csproj", "./"]
-RUN dotnet restore "Eis.Identity.Api.csproj"
+COPY ["Judah.Identity.Api.csproj", "./"]
+RUN dotnet restore "Judah.Identity.Api.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "Eis.Identity.Api.csproj" -c Release -o /app/build
+RUN dotnet build "Judah.Identity.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Eis.Identity.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish "Judah.Identity.Api.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Eis.Identity.Api.dll"]
+ENTRYPOINT ["dotnet", "Judah.Identity.Api.dll"]

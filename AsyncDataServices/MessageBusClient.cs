@@ -26,7 +26,6 @@ namespace Eis.Identity.Api.AsyncDataServices
             {
                 _conn = factory.CreateConnection();
                 _channel = _conn.CreateModel();
-
                 _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
                 _conn.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
 
@@ -50,7 +49,6 @@ namespace Eis.Identity.Api.AsyncDataServices
             {
                 Console.WriteLine("--> RabbitMQ connection is closed.");
             }
-
         }
 
         private void SendMessage(string message)

@@ -81,9 +81,6 @@ namespace Eis.Identity.Api.Controllers
             {
                 var appUserDto = _mapper.Map<AppUserPublishedDto>(appUserReadDto);
                 appUserDto.Event = "AppUser_Published";
-
-                Console.WriteLine($"--> appUserDto Event: {appUserDto.Event}");
-                Console.WriteLine($"Is MessageBusClient null?:{(_messageBusClient == null)}");
                 _messageBusClient.PublishNewAppUser(appUserDto);
             }
             catch (Exception ex)

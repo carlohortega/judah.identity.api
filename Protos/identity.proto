@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Eis.Identity.Api";
+
+service GrpcIdentity {
+    rpc GetAllAppUsers (GetAllRequest) returns (AppUsersResponse);
+}
+
+message GetAllRequest {}
+
+message GrpcIdentityModel {
+    int32 appUserId = 1;
+    string name = 2;
+    string objectId = 3;
+}
+
+message AppUsersResponse {
+    repeated GrpcIdentityModel appUsers = 1;
+}

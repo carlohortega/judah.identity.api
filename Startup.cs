@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Eis.Identity.Api.AsyncDataServices;
 using Eis.Identity.Api.Data;
+using Eis.Identity.Api.SyncDataServices.Grcp;
 using Eis.Identity.Api.SyncDataServices.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +44,7 @@ namespace Eis.Identity.Api
             services.AddScoped<IAppUserRepo, AppUserRepo>();
             services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
             services.AddSingleton<IMessageBusClient, MessageBusClient>();
+            services.AddGrpc();
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen(c =>
@@ -70,6 +74,11 @@ namespace Eis.Identity.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapGrpcService<GrpcIdentityService>();
+                endpoints.MapGet("/Protos/identity.proto", async context =>
+                {
+                    await context.Response.WriteAsync(File.ReadAllText("Protos/identity.proto"));
+                });
             });
 
             PrepDb.PrepPopulation(app);
